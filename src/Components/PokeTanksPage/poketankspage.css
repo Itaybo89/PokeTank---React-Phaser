@@ -1,0 +1,74 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap");
+
+.retro-container {
+  font-family: "Cinzel", serif;
+  background: url("../../../public/main-bg.png");
+  background-size: cover;
+  margin: 0;
+  padding: 0;
+  color: black;
+  text-align: center;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  background-repeat: no-repeat;
+  box-sizing: border-box;
+  cursor: grab;
+}
+
+.medieval-button {
+  background: rgba(0, 0, 0, 0.5);
+  border: 3px solid white;
+  border-radius: 5px;
+  color: white;
+  padding: 10px 30px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+  transition: color 0.3s ease;
+}
+
+.medieval-button-back {
+  background: rgba(0, 0, 0, 0.5);
+  border: 3px solid white;
+  border-radius: 5px;
+  color: white;
+  padding: 10px 30px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+  transition: color 0.3s ease;
+  margin-top: 10px;
+}
+
+
+.medieval-button:hover {
+  color: #ffcc00;
+}
+
+.title {
+  font-family: "Cinzel", sans-serif;
+  font-size: 4rem;
+  position: fixed;
+  top: 70px;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+}
+
+.speaker-button {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+}
