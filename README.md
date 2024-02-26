@@ -1,9 +1,6 @@
-### README.md for PokeTank Project
-
-```markdown
 # PokeTank
 
-## Live Link / Demo Link
+## Live Link
 [Click to play here](https://pakatanks.web.app/)
 
 ## Table of Contents
@@ -56,4 +53,3 @@ The development of PokeTank was influenced by my previous experience with game d
 
 ## License
 This project is open source and available under the [MIT License](LICENSE.md).
-```
