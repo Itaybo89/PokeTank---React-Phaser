@@ -24,7 +24,7 @@
   "scripts": {
     "start": "react-scripts start",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
+    "deploy": "gh-pages -d build -r https://github.com/Itaybo89/PokeTank---React-Phaser.git",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
