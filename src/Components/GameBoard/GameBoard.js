@@ -21,12 +21,24 @@ const GameBoard = () => {
   const angleRef = useRef(0);
   const [playerTankHealth, setPlayerTankHealth] = useState(3);
   const [enemyTankHealth, setEnemyTankHealth] = useState(3);
-  const [hitCounter, setHitCounter] = useState(3); 
-  const [audioFile, setAudioFile] = useState('');
-
+  const [hitCounter, setHitCounter] = useState(3);
+  const [audioFile, setAudioFile] = useState("");
 
   const navigate = useNavigate();
-  
+
+  // Enemy simple firing plan (pops first each enemy turn)
+  const enemyPlanRef = useRef([
+    { angle: 8, power: 25 },
+    { angle: 12, power: 25 },
+    { angle: 15, power: 37.5 },
+    { angle: 10, power: 25 },
+    { angle: 18, power: 37.5 },
+    { angle: 20, power: 50 },
+    { angle: 14, power: 25 },
+    { angle: 22, power: 50 },
+    { angle: 6, power: 25 },
+    { angle: 16, power: 37.5 },
+  ]);
 
   const playerTankRef = useRef(new Tank(/*...*/));
   const enemyTankRef = useRef(new Tank(/*...*/));
@@ -52,8 +64,8 @@ const GameBoard = () => {
   let playerTank;
   let enemyTank;
   let shellIsActive = true;
-  let count  = 0;
-
+  let count = 0;
+  let contactCooldown = false; 
 
   const barrelLength = 41.988;
   const initialX = 1000;
@@ -89,7 +101,7 @@ const GameBoard = () => {
   useEffect(() => {
     if (hitCounter === 2) {
       if (audioRef.current) {
-        audioRef.current.src = audioFile2; 
+        audioRef.current.src = audioFile2;
         audioRef.current.load();
         audioRef.current.play();
       }
@@ -177,7 +189,8 @@ const GameBoard = () => {
       0,
       false,
       power,
-      5
+      5,
+      "enemy" // mark as enemy
     );
 
     enemyTank.body = this.add.image(0, 0, "body");
@@ -203,15 +216,74 @@ const GameBoard = () => {
 
   function gameOver(message) {
     setTimeout(() => {
-      const userChoice = window.confirm("Game Over: " + message + "\nWould you like to go back to the main menu?");
+      const userChoice = window.confirm(
+        "Game Over: " + message + "\nWould you like to go back to the main menu?"
+      );
       if (userChoice) {
-        navigate('/igame');
+        navigate("/"); // local main menu
       }
     }, 100);
   }
-  const PLAYER = "player";
-  const ENEMY = "enemy";
+
   const WORLD_WIDTH = 1200;
+
+  function clamp(val, min, max) {
+    return Math.max(min, Math.min(max, val));
+  }
+
+  function enemyTakeTurn(scene) {
+    // Take next plan entry; if empty, fall back to a safe default
+    const step =
+      enemyPlanRef.current.length > 0
+        ? enemyPlanRef.current.shift()
+        : { angle: 12, power: 25 };
+
+    // Begin enemy movement (existing AI: move right)
+    enemyTank.aiAction(WORLD_WIDTH);
+
+    // After AI movement completes (~15 * 250ms = 3750ms), set angle and shoot
+    scene.time.delayedCall(3800, () => {
+      // Set the barrel angle directly (keep within 0..25 to match game rules)
+      const targetAngle = clamp(step.angle, 0, 25);
+      enemyTank.angleSelf = targetAngle;
+      if (enemyTank.barrel) {
+        enemyTank.barrel.angle = targetAngle;
+      }
+
+      // Shoot once using the planned power — mirror Tank.shoot(), aim right (no +180)
+      {
+        const aim = -enemyTank.angleTerrain + enemyTank.angleSelf;
+        const effectiveAngle = aim;
+        const angleRad = Phaser.Math.DegToRad(effectiveAngle);
+
+        const baseX = enemyTank.position.x;
+        const baseY = enemyTank.position.y;
+        const yOffset = 50;
+        const xOffset = 60 * Math.cos(angleRad);
+        const newOffsetY = 60 * Math.sin(-angleRad);
+
+        let finalX = baseX + xOffset;
+        let finalY = baseY - yOffset - newOffsetY;
+
+        const extra = 6;
+        finalX += extra * Math.cos(angleRad);
+        finalY -= extra * Math.sin(-angleRad);
+
+        const adjustedAngle = -effectiveAngle;
+
+        scene.shell = new Shell(scene, finalX, finalY, adjustedAngle, step.power);
+        scene.shellOwner = "enemy";
+      }
+
+      // End enemy turn → back to player
+      scene.time.delayedCall(600, () => {
+        enemyTank.isTurn = false;
+        playerTank.isTurn = true;
+        playerTank.moveCount = 10;
+        playerTank.shellCount = 1;
+      });
+    }); // closes delayedCall
+  } // closes enemyTakeTurn
 
   function update() {
     if (!playerTank || !cursors) {
@@ -226,16 +298,30 @@ const GameBoard = () => {
     const terrainData = mapData[xPosition.toString()] || null;
 
     if (this.shell && shellIsActive) {
-      const hitEnemy = this.shell.checkCollision(enemyTank);
-      if (hitEnemy) {
-        setHitCounter(prevCounter => prevCounter - 1);
-        count ++;
-        if (count >= 3) {
-          gameOver('You Win');
-          return;
+      // choose target based on who fired
+      const targetTank = this.shellOwner === "player" ? enemyTank : playerTank;
+      const hit = this.shell.checkCollision(targetTank);
+
+      if (hit) {
+        if (this.shellOwner === "player") {
+          // Player hit enemy → enemy loses 1 HP
+          setEnemyTankHealth((hp) => {
+            const next = Math.max(0, hp - 1);
+            if (next <= 0) gameOver("You Win");
+            return next;
+          });
+        } else {
+          // Enemy hit player → player loses 1 HP
+          setPlayerTankHealth((hp) => {
+            const next = Math.max(0, hp - 1);
+            if (next <= 0) gameOver("You Lose");
+            return next;
+          });
         }
+        return;
       }
     }
+
 
     const playerTankX = playerTank.position.x;
     const playerTankY = playerTank.position.y;
@@ -249,9 +335,19 @@ const GameBoard = () => {
       enemyTankY >= playerTankY - collisionBoxSize &&
       enemyTankY <= playerTankY + collisionBoxSize
     ) {
-      gameOver('You Lose');
-      return;
+      if (!contactCooldown) {
+        contactCooldown = true;
+        setPlayerTankHealth((hp) => {
+          const next = Math.max(0, hp - 1);
+          if (next <= 0) gameOver("You Lose");
+          return next;
+        });
+        setTimeout(() => {
+          contactCooldown = false;
+        }, 1000); // 1s grace so you don't drain all HP in one overlap
+      }
     }
+
 
     if (terrainData && (cursors.left.isDown || cursors.right.isDown)) {
       angleRef.current = playerTank.getEffectiveAngle();
@@ -272,62 +368,59 @@ const GameBoard = () => {
       angleRef.current = playerTank.getEffectiveAngle();
       setEffectiveAngle(angleRef.current);
     }
+
     if (!gamePaused) {
       if (Phaser.Input.Keyboard.JustUp(cursors.space)) {
         if (playerTank && playerTank.isTurn) {
           gamePaused = true;
 
+          // Player fires
           playerTank.shoot(this, powerRef.current);
+          this.shellOwner = "player";
 
           playerTank.isTurn = false;
           enemyTank.isTurn = true;
           enemyTank.moveCount = 10;
 
+          // Enemy takes turn after short delay
           setTimeout(() => {
-            enemyTank.aiAction(WORLD_WIDTH, playerTank);
+            enemyTakeTurn(this);
             gamePaused = false;
-            playerTank.moveCount = 10;
-            playerTank.shellCount = 1;
-            playerTank.isTurn = true;
-            enemyTank.isTurn = false;
           }, 3000);
         }
       }
     }
-  }
+  } // ✅ CLOSES update()
 
   const handlePowerClick = (newPower) => {
     setPower(newPower);
   };
 
-
   return (
     <div>
       <div id="game-container"></div>
+
+      {/* Left: Enemy HP */}
       <div className="health-bar left">
-        {hitCounter >= 3 && <div className="health-bar-cell green"></div>}
-        {hitCounter >= 2 && <div className="health-bar-cell green"></div>}
-        {hitCounter >= 1 && <div className="health-bar-cell green"></div>}
+        {enemyTankHealth >= 3 && <div className="health-bar-cell green"></div>}
+        {enemyTankHealth >= 2 && <div className="health-bar-cell green"></div>}
+        {enemyTankHealth >= 1 && <div className="health-bar-cell green"></div>}
       </div>
+
+      {/* Right: Player HP */}
       <div className="health-bar right">
         <div
-          className={`health-bar-cell ${enemyTankHealth > 2
-            ? "green"
-            : enemyTankHealth > 1
-              ? "yellow"
-              : "red"
-            }`}
+          className={`health-bar-cell ${
+            playerTankHealth > 2 ? "green" : playerTankHealth > 1 ? "yellow" : "red"
+          }`}
         ></div>
         <div
-          className={`health-bar-cell ${enemyTankHealth > 1
-            ? "green"
-            : enemyTankHealth > 0
-              ? "yellow"
-              : "red"
-            }`}
+          className={`health-bar-cell ${
+            playerTankHealth > 1 ? "green" : playerTankHealth > 0 ? "yellow" : "red"
+          }`}
         ></div>
         <div
-          className={`health-bar-cell ${enemyTankHealth > 0 ? "green" : "red"}`}
+          className={`health-bar-cell ${playerTankHealth > 0 ? "green" : "red"}`}
         ></div>
       </div>
 
@@ -358,7 +451,7 @@ const GameBoard = () => {
             <span className="power-text">4x</span>
           </div>
 
-          <div class="instructions">
+          <div className="instructions">
             <span>Movement: &#8592;/&#8594;</span>
             <span>
               Angle Adjust: &#8593;/&#8595;
@@ -370,10 +463,11 @@ const GameBoard = () => {
 
           <div id="angle-display">
             <span id="angle-span">{effectiveAngle}</span>
-            <span id="degree-span" >degrees</span>
+            <span id="degree-span">degrees</span>
           </div>
         </div>
       </div>
+
       <button className="speaker-button" onClick={toggleMute}>
         {isMuted ? (
           <i className="fas fa-volume-mute fa-2x"></i>
@@ -387,5 +481,6 @@ const GameBoard = () => {
       </audio>
     </div>
   );
-};
+  }; // end GameBoard component
+
 export default GameBoard;

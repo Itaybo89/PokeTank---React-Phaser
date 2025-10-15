@@ -143,26 +143,36 @@ class Tank {
   }
 
   shoot(scene, power) {
-    const effectivePower = power;
-    const effectiveAngle = 180 + (-this.angleTerrain + this.angleSelf);
-    const adjustedAngle = -effectiveAngle;
-    const effectiveAngleInRadians = Phaser.Math.DegToRad(effectiveAngle);
+  const effectivePower = power;
+
+  // Aim relative to terrain and barrel
+    const aim = -this.angleTerrain + this.angleSelf;
+
+    // Player fires LEFT (original behavior): 180 + aim
+    // Enemy fires RIGHT: aim
+    const effectiveAngle = this.type === "enemy" ? aim : (180 + aim);
+    const adjustedAngle = -effectiveAngle; // convention used by Shell
+    const angleRad = Phaser.Math.DegToRad(effectiveAngle);
+
     const baseX = this.position.x;
     const baseY = this.position.y;
-    const yOffset = 50;
-    const xOffset = 60 * Math.cos(effectiveAngleInRadians);
-    const newOffsetY = 60 * Math.sin(-effectiveAngleInRadians);
-    const finalX = baseX + xOffset;
-    const finalY = baseY - yOffset - newOffsetY;
-    const newShell = new Shell(
-      scene,
-      finalX,
-      finalY,
-      adjustedAngle,
-      effectivePower
-    );
+    const yOffset = 50;     // keep EXACTLY as before
+    const muzzle  = 60;     // keep EXACTLY as before
+
+    // 🔑 Spawn distance:
+    // - Player: EXACT original (no extra)
+    // - Enemy:  a bit further to avoid self-hit
+    const extraClearance = (this.type === "enemy") ? 6 : 0;
+    const offset = muzzle + extraClearance;
+
+    const finalX = baseX + offset * Math.cos(angleRad);
+    const finalY = baseY - yOffset - offset * Math.sin(-angleRad);
+
+    const newShell = new Shell(scene, finalX, finalY, adjustedAngle, effectivePower);
     scene.shell = newShell;
   }
+
+
 
   aiAction(worldWidth) {
     let i = 0;
