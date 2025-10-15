@@ -1,24 +1,24 @@
 {
   "files": {
-    "main.css": "/Itaybo89.github.io/PokeTanks/static/css/main.50b63469.css",
-    "main.js": "/Itaybo89.github.io/PokeTanks/static/js/main.0259fee1.js",
-    "static/js/787.ff1637a8.chunk.js": "/Itaybo89.github.io/PokeTanks/static/js/787.ff1637a8.chunk.js",
-    "static/media/orc1.mp3": "/Itaybo89.github.io/PokeTanks/static/media/orc1.67ef0a344ef04f9a1ec9.mp3",
-    "static/media/DECISIVE.mp3": "/Itaybo89.github.io/PokeTanks/static/media/DECISIVE.d84d9fa4467e8f7a868e.mp3",
-    "static/media/intro.mp3": "/Itaybo89.github.io/PokeTanks/static/media/intro.2b06de443ddc3086ccab.mp3",
-    "static/media/main-bg.png": "/Itaybo89.github.io/PokeTanks/static/media/main-bg.5d759be3bc2828000d57.png",
-    "static/media/explosive.png": "/Itaybo89.github.io/PokeTanks/static/media/explosive.52549935d2ea766a14aa.png",
-    "index.html": "/Itaybo89.github.io/PokeTanks/index.html",
-    "static/media/shell.svg": "/Itaybo89.github.io/PokeTanks/static/media/shell.da5ae745cdc1994b4c191ed47df3ea34.svg",
-    "static/media/TankBody.svg": "/Itaybo89.github.io/PokeTanks/static/media/TankBody.a2b6cdb9cdb1111bc1f3f21606a4a65b.svg",
-    "static/media/TankWheels.svg": "/Itaybo89.github.io/PokeTanks/static/media/TankWheels.4f41833d22ad9e81e1345d8896197e1c.svg",
-    "static/media/TankBarrel.svg": "/Itaybo89.github.io/PokeTanks/static/media/TankBarrel.0e91b62fddd4473f6a73d8302435a3a2.svg",
-    "main.50b63469.css.map": "/Itaybo89.github.io/PokeTanks/static/css/main.50b63469.css.map",
-    "main.0259fee1.js.map": "/Itaybo89.github.io/PokeTanks/static/js/main.0259fee1.js.map",
-    "787.ff1637a8.chunk.js.map": "/Itaybo89.github.io/PokeTanks/static/js/787.ff1637a8.chunk.js.map"
+    "main.css": "/PokeTank---React-Phaser/static/css/main.2d17e967.css",
+    "main.js": "/PokeTank---React-Phaser/static/js/main.eadca075.js",
+    "static/js/787.ff1637a8.chunk.js": "/PokeTank---React-Phaser/static/js/787.ff1637a8.chunk.js",
+    "static/media/orc1.mp3": "/PokeTank---React-Phaser/static/media/orc1.67ef0a344ef04f9a1ec9.mp3",
+    "static/media/DECISIVE.mp3": "/PokeTank---React-Phaser/static/media/DECISIVE.d84d9fa4467e8f7a868e.mp3",
+    "static/media/intro.mp3": "/PokeTank---React-Phaser/static/media/intro.2b06de443ddc3086ccab.mp3",
+    "static/media/main-bg.png": "/PokeTank---React-Phaser/static/media/main-bg.5d759be3bc2828000d57.png",
+    "static/media/explosive.png": "/PokeTank---React-Phaser/static/media/explosive.52549935d2ea766a14aa.png",
+    "index.html": "/PokeTank---React-Phaser/index.html",
+    "static/media/shell.svg": "/PokeTank---React-Phaser/static/media/shell.da5ae745cdc1994b4c191ed47df3ea34.svg",
+    "static/media/TankBody.svg": "/PokeTank---React-Phaser/static/media/TankBody.a2b6cdb9cdb1111bc1f3f21606a4a65b.svg",
+    "static/media/TankWheels.svg": "/PokeTank---React-Phaser/static/media/TankWheels.4f41833d22ad9e81e1345d8896197e1c.svg",
+    "static/media/TankBarrel.svg": "/PokeTank---React-Phaser/static/media/TankBarrel.0e91b62fddd4473f6a73d8302435a3a2.svg",
+    "main.2d17e967.css.map": "/PokeTank---React-Phaser/static/css/main.2d17e967.css.map",
+    "main.eadca075.js.map": "/PokeTank---React-Phaser/static/js/main.eadca075.js.map",
+    "787.ff1637a8.chunk.js.map": "/PokeTank---React-Phaser/static/js/787.ff1637a8.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.50b63469.css",
-    "static/js/main.0259fee1.js"
+    "static/css/main.2d17e967.css",
+    "static/js/main.eadca075.js"
   ]
 }
