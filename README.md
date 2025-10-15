@@ -1,7 +1,7 @@
 # PokeTank
 
 ## Live Link
-[Click to play here](https://pakatanks.web.app/)
+[Click to play here](https://itaybo89.github.io/PokeTank---React-Phaser/)
 
 ## Table of Contents
 - [About The Project](#about-the-project)
